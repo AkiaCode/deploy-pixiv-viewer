@@ -4,12 +4,12 @@ async function handleRequest(request) {
     const { pathname, origin, search } = new URL(request.url);
 
     if (pathname.startsWith("/view")) {
-        const resp = await fetch(origin + "/req?picture=false")
+        const resp = await fetch("https://pixiv-viewer.deno.dev/req?picture=false")
         const { html } = await resp.json()
 
         const url = html.contents[Math.floor((Math.random() * Object.keys(html.contents).length) + 1)].url
 
-        const picture = await fetch(origin + "/req?url=" + url + "&picture=true")
+        const picture = await fetch("https://pixiv-viewer.deno.dev/req?url=" + url + "&picture=true")
         const json = await picture.json()
         const uint8 = new Uint8Array(json.html).buffer
         ///new Deno.Buffer(uint8).bytes()
