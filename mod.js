@@ -3,6 +3,8 @@ import { encode } from "https://deno.land/std/encoding/base64.ts"
 async function handleRequest(request) {
     const { pathname, origin, search } = new URL(request.url);
 
+    console.log(origin)
+
     if (pathname.startsWith("/view")) {
         const resp = await fetch(origin + "/req?picture=false")
         const { html } = await resp.json()
