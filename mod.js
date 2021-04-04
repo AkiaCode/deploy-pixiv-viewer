@@ -3,21 +3,31 @@ import { encode } from "https://deno.land/std/encoding/base64.ts"
 async function handleRequest(request) {
     const { pathname, origin, search } = new URL(request.url);
 
-    console.log(origin)
-
     if (pathname.startsWith("/view")) {
-        const resp = await fetch(origin + "/req?picture=false")
-        const { html } = await resp.json()
+        const resp = await fetch("https://www.pixiv.net/ranking.php?mode=daily&content=illust&p=1&format=json", {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+                'Referer': 'https://www.pixiv.net'
+            },
+        });
+        const json = await resp.json()
 
-        const url = html.contents[Math.floor((Math.random() * Object.keys(html.contents).length) + 1)].url
+        const url = json.contents[Math.floor((Math.random() * Object.keys(json.contents).length) + 1)].url
 
-        const picture = await fetch(origin + "/req?url=" + url + "&picture=true")
-        const json = await picture.json()
-        const uint8 = new Uint8Array(json.html).buffer
+        const response = await fetch(url, {
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
+              'Referer': 'https://www.pixiv.net',
+              'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
+            },
+          })
+
+        const arrayBuffery = await (await response.blob()).arrayBuffer()
+        //const uint8 = new Uint8Array(json.html).buffer
         ///new Deno.Buffer(uint8).bytes()
 
 
-        return new Response(`<body><img src="data:image/jpeg;base64,${encode(uint8)}" width="auto" height="auto" style="display:block; margin: auto;" alt="" ></body>`,
+        return new Response(`<body><img src="data:image/jpeg;base64,${encode(arrayBuffery)}" width="auto" height="auto" style="display:block; margin: auto;" alt="" ></body>`,
             {
               status: 200,
               headers: {},
@@ -39,7 +49,7 @@ async function handleRequest(request) {
               })
 
             const arrayBuffery = await (await response.blob()).arrayBuffer()
-            resp = { code: Array.from(new Uint8Array(arrayBuffery)), ok: response.ok };
+            resp = { example: "https://pixiv-viewer.deno.dev/req?picture=true&url=<pixiv_picture_url>", code: Array.from(new Uint8Array(arrayBuffery)), ok: response.ok };
         } else {
             const response = await fetch("https://www.pixiv.net/ranking.php?mode=daily&content=illust&p=1&format=json", {
                 headers: {
@@ -47,11 +57,11 @@ async function handleRequest(request) {
                     'Referer': 'https://www.pixiv.net'
                 },
             });
-            resp = { code: await response.json(), ok: response.ok }
+            resp = { example: "https://pixiv-viewer.deno.dev/req?picture=false", code: await response.json(), ok: response.ok }
         }
 
         if (resp.ok) {
-            return new Response(JSON.stringify({ html: resp.code, status: 200, headers: { "content-type": "charset=UTF-8" } }),
+            return new Response(JSON.stringify({ example: resp.example, html: resp.code, status: 200, headers: { "content-type": "charset=UTF-8" } }),
             {
                 headers: {
                     "content-type": "charset=UTF-8",
@@ -59,7 +69,7 @@ async function handleRequest(request) {
             })
         }
 
-        return new Response(JSON.stringify({ html: JSON.stringify({ message: "couldn't process your request" }), status: 500, headers: { "content-type": "charset=UTF-8" }}),
+        return new Response(JSON.stringify({ example: resp.example, html: JSON.stringify({ message: "couldn't process your request" }), status: 500, headers: { "content-type": "charset=UTF-8" }}),
         {
             headers: {
                 "content-type": "charset=UTF-8",
