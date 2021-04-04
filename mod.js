@@ -83,7 +83,7 @@ async function handleRequest(request) {
             <h1 style="text-align: center;">Random Pixiv Picture Viewer</h1>
                 <p style="text-align: center;"><a href="/view">View</a> - Random Pixiv picture viewer </p>
                 <p style="text-align: center;"><a href="/req">Request</a> - Pixiv picture API (private) </p>
-                <p style="text-align: center;"><a href="https://github.com/akiacode/deploy-pixiv-view">Repository</a> - Random Pixiv picture viewer repository </p>
+                <p style="text-align: center;"><a href="https://github.com/akiacode/deploy-pixiv-viewer">Repository</a> - Random Pixiv picture viewer repository </p>
                 <p style="text-align: center;"><a href="https://github.com/akiacode">Author</a> - AkiaCode (aka aki)</p>
         </body>`,
         {
