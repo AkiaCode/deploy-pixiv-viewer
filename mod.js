@@ -1,16 +1,16 @@
 import { encode } from "https://deno.land/std/encoding/base64.ts"
 
 async function handleRequest(request) {
-    const { pathname, origin, search } = new URL(request.url);
+    const { pathname, search } = new URL(request.url);
 
     if (pathname.startsWith("/view")) {
-        const resp = await fetch("https://www.pixiv.net/ranking.php?mode=daily&content=illust&p=1&format=json", {
+        const urlResponse = await fetch("https://www.pixiv.net/ranking.php?mode=daily&content=illust&p=1&format=json", {
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36',
                 'Referer': 'https://www.pixiv.net'
             },
         });
-        const json = await resp.json()
+        const json = await urlResponse.json()
 
         const url = json.contents[Math.floor((Math.random() * Object.keys(json.contents).length) + 1)].url
 
